@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>College Registration</title>
+  <title>College Cafeteria Menu & Recipes</title>
   <style>
     body {
       font-family: Arial;
-      background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background-color: #fff3e0;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #FF7043;
+      color: white;
+      text-align: center;
+      padding: 20px;
     }
 
     .container {
-      background: white;
-      padding: 30px;
+      max-width: 700px;
+      margin: 20px auto;
+      background-color: white;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
     }
 
-    input, button {
+    select, button {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
@@ -30,64 +36,171 @@
     }
 
     button {
-      background: #007BFF;
+      background-color: #FF7043;
       color: white;
       border: none;
       cursor: pointer;
     }
 
     button:hover {
-      background: #0056b3;
+      background-color: #E64A19;
     }
 
-    .success {
+    .items, .recipe {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .recipe {
+      padding: 15px;
+      border: 1px solid #FF7043;
+      border-radius: 5px;
+      background-color: #fff8f0;
       display: none;
-      color: green;
+    }
+
+    h3 {
+      color: #FF7043;
+    }
+
+    ul, ol {
+      padding-left: 20px;
+    }
+
+    li {
+      cursor: pointer;
+      margin: 5px 0;
+    }
+
+    li:hover {
+      color: #FF7043;
     }
   </style>
 </head>
 <body>
 
-<div class="container" id="formContainer">
-  <h2>Student Registration</h2>
-  <form id="registrationForm">
-    <input type="text" id="name" placeholder="Enter your name" required>
-    <input type="email" id="email" placeholder="Enter your email" required>
-    <input type="number" id="age" placeholder="Enter your age" required>
-    <input type="text" id="course" placeholder="Enter your course" required>
-    <button type="submit">Register</button>
-  </form>
-</div>
+<header>
+  <h1>College Cafeteria Menu & Recipes</h1>
+</header>
 
-<div class="container success" id="successContainer">
-  <h2>Registration Successful!</h2>
-  <p id="message"></p>
+<div class="container">
+  <h2>Select Meal Type</h2>
+  <select id="mealType" onchange="showItems()">
+    <option value="">Select</option>
+    <option value="Breakfast">Breakfast</option>
+    <option value="Lunch">Lunch</option>
+    <option value="Dinner">Dinner</option>
+    <option value="Snack">Snack</option>
+  </select>
+
+  <div class="items" id="itemList"></div>
+  <div class="recipe" id="recipeBox"></div>
 </div>
 
 <script>
-  const form = document.getElementById('registrationForm');
-  const formContainer = document.getElementById('formContainer');
-  const successContainer = document.getElementById('successContainer');
-  const message = document.getElementById('message');
+const menu = {
+  "Breakfast": ["Pancakes", "Veggie Omelette", "Fruit Smoothie", "Avocado Toast"],
+  "Lunch": ["Grilled Chicken Salad", "Vegetable Stir-Fry", "Pasta Alfredo", "Quinoa Bowl"],
+  "Dinner": ["Baked Salmon", "Chicken Curry", "Veggie Lasagna", "Stuffed Peppers"],
+  "Snack": ["Chocolate Chip Cookies", "Fruit Yogurt Parfait", "Veggie Sandwich", "Hummus with Crackers"]
+};
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+const recipes = {
+  "Pancakes": {
+    ingredients: ["1 cup flour", "1 tbsp sugar", "1 tsp baking powder", "1 cup milk", "1 egg", "2 tbsp melted butter", "Maple syrup"],
+    instructions: ["Mix flour, sugar, and baking powder.", "Add milk, egg, and butter, stir until smooth.", "Heat a pan, pour batter.", "Cook until bubbles appear, flip, cook other side.", "Serve with maple syrup."]
+  },
+  "Veggie Omelette": {
+    ingredients: ["2 eggs", "1/4 cup onions", "1/4 cup tomatoes", "1/4 cup bell peppers", "Salt & pepper", "1 tsp oil"],
+    instructions: ["Beat eggs with salt & pepper.", "Sauté veggies in oil 2 mins.", "Pour eggs over veggies, cook until set, fold and serve."]
+  },
+  "Fruit Smoothie": {
+    ingredients: ["1 banana", "1/2 cup strawberries", "1/2 cup yogurt", "1/4 cup milk", "1 tsp honey"],
+    instructions: ["Blend all ingredients until smooth.", "Pour in a glass and serve chilled."]
+  },
+  "Avocado Toast": {
+    ingredients: ["2 slices bread", "1 ripe avocado", "Salt & pepper", "Lemon juice"],
+    instructions: ["Toast bread.", "Mash avocado with salt, pepper, lemon juice.", "Spread on toast and serve."]
+  },
+  "Grilled Chicken Salad": {
+    ingredients: ["1 chicken breast", "2 cups lettuce", "1/2 cup cherry tomatoes", "1/4 cup cucumber", "2 tbsp olive oil", "1 tbsp lemon juice", "Salt & pepper"],
+    instructions: ["Grill chicken with salt & pepper.", "Mix veggies in a bowl.", "Slice chicken, add to salad.", "Drizzle oil & lemon, toss and serve."]
+  },
+  "Vegetable Stir-Fry": {
+    ingredients: ["1 cup broccoli", "1 cup bell peppers", "1/2 cup carrots", "2 tbsp soy sauce", "1 tsp oil", "Salt"],
+    instructions: ["Heat oil, add vegetables, stir-fry 5-6 mins.", "Add soy sauce & salt, cook 2 mins.", "Serve hot."]
+  },
+  "Pasta Alfredo": {
+    ingredients: ["200g pasta", "1/2 cup cream", "2 tbsp butter", "1/4 cup grated cheese", "Salt & pepper"],
+    instructions: ["Cook pasta.", "Melt butter, add cream & cheese.", "Mix pasta, season, serve warm."]
+  },
+  "Quinoa Bowl": {
+    ingredients: ["1 cup cooked quinoa", "1/2 cup roasted vegetables", "1/4 cup chickpeas", "2 tbsp olive oil", "Salt & pepper"],
+    instructions: ["Mix quinoa, vegetables & chickpeas.", "Add olive oil, salt & pepper, serve fresh."]
+  },
+  "Baked Salmon": {
+    ingredients: ["1 salmon fillet", "Salt & pepper", "1 tbsp olive oil", "1 lemon slice", "Herbs"],
+    instructions: ["Preheat oven to 200°C.", "Season salmon, add lemon & herbs.", "Bake 15-20 mins, serve hot."]
+  },
+  "Chicken Curry": {
+    ingredients: ["200g chicken", "1 onion chopped", "2 tomatoes chopped", "2 tsp curry powder", "1 cup water", "Salt"],
+    instructions: ["Sauté onions until golden.", "Add chicken, cook 5 mins.", "Add tomatoes, curry powder, water, salt, simmer 20 mins.", "Serve with rice."]
+  },
+  "Veggie Lasagna": {
+    ingredients: ["Lasagna sheets", "1 cup tomato sauce", "1 cup mixed vegetables", "1/2 cup cheese"],
+    instructions: ["Preheat oven 180°C.", "Layer sheets, sauce, vegetables, cheese.", "Bake 25-30 mins, serve warm."]
+  },
+  "Stuffed Peppers": {
+    ingredients: ["4 bell peppers", "1 cup cooked rice", "1/2 cup vegetables", "1/4 cup cheese", "Salt & pepper"],
+    instructions: ["Cut tops, remove seeds.", "Mix rice, vegetables, cheese, salt & pepper.", "Stuff peppers, bake 20 mins 180°C.", "Serve hot."]
+  },
+  "Chocolate Chip Cookies": {
+    ingredients: ["1 cup flour", "1/2 tsp baking soda", "1/2 cup butter", "1/2 cup sugar", "1 egg", "1 tsp vanilla", "1/2 cup chocolate chips"],
+    instructions: ["Preheat oven 180°C.", "Cream butter & sugar.", "Add egg & vanilla.", "Mix in flour, baking soda & chips.", "Bake 10-12 mins."]
+  },
+  "Fruit Yogurt Parfait": {
+    ingredients: ["1/2 cup yogurt", "1/4 cup granola", "1/2 cup mixed fruits"],
+    instructions: ["Layer yogurt, granola & fruits in a glass.", "Repeat layers, serve chilled."]
+  },
+  "Veggie Sandwich": {
+    ingredients: ["2 slices bread", "Lettuce, tomato, cucumber", "Cheese slice", "Mayonnaise"],
+    instructions: ["Spread mayo on bread.", "Add vegetables & cheese.", "Close sandwich, serve."]
+  },
+  "Hummus with Crackers": {
+    ingredients: ["1/2 cup chickpeas", "2 tbsp olive oil", "1 tbsp lemon juice", "Salt", "Crackers"],
+    instructions: ["Blend chickpeas, olive oil, lemon juice & salt.", "Serve with crackers."]
+  }
+};
 
-    const name = document.getElementById('name').value;
-    const course = document.getElementById('course').value;
+function showItems() {
+  const mealType = document.getElementById('mealType').value;
+  const itemList = document.getElementById('itemList');
+  const recipeBox = document.getElementById('recipeBox');
+  recipeBox.style.display = 'none';
+  itemList.innerHTML = '';
 
-    // Hide form, show success message
-    formContainer.style.display = 'none';
-    successContainer.style.display = 'block';
+  if(!mealType) return;
 
-    message.innerHTML = `
-      Dear <strong>${name}</strong>, you are successfully registered for <strong>${course}</strong> at <strong>Greenfield College</strong>.<br><br>
-      <strong>College Details:</strong><br>
-      Address: 123 College Road, City, Country<br>
-      Email: info@greenfieldcollege.com<br>
-      Phone: +91-1234567890
-    `;
+  menu[mealType].forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    li.onclick = () => showRecipe(item);
+    itemList.appendChild(li);
   });
+}
+
+function showRecipe(item) {
+  const recipe = recipes[item];
+  const recipeBox = document.getElementById('recipeBox');
+  let html = `<h3>${item}</h3>`;
+  html += `<strong>Ingredients:</strong><ul>`;
+  recipe.ingredients.forEach(ing => html += `<li>${ing}</li>`);
+  html += `</ul><strong>Instructions:</strong><ol>`;
+  recipe.instructions.forEach(ins => html += `<li>${ins}</li>`);
+  html += `</ol>`;
+  recipeBox.style.display = 'block';
+  recipeBox.innerHTML = html;
+}
 </script>
 
 </body>
