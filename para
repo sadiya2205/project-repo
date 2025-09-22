@@ -1,0 +1,3 @@
+This College Web Application provides information about the college, its courses, and contact details. Students can register by entering their name, email, age, and chosen course. After registration, 
+a confirmation message displays their details along with the college name, address, email, and phone number. Built with HTML, CSS, and JavaScript, it is a simple, interactive, and user-friendly platform for
+managing student registrations.
