@@ -108,6 +108,7 @@ button.btn-primary:hover{background:#45a049;}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 <script>
 // Section switch
 function showSection(id){
@@ -161,28 +162,19 @@ profileForm.addEventListener('submit', e=>{
   showSection('recommendations');
 });
 
-// Report upload
+// Report upload and parsing using Tesseract.js (OCR)
 document.getElementById('reportUpload').addEventListener('change', e=>{
   const file = e.target.files[0];
   if(file){
-    document.getElementById('reportAnalysis').innerHTML=`<div class="recommend-card">Analyzing report: ${file.name}...<br>
-    Detected Conditions: Hypertension, High Cholesterol.<br>
-    Recommendation: Follow diet plan, take medicines as prescribed.</div>`;
-  }
-});
-
-// Notifications
-function scheduleNotifications(){
-  if(Notification.permission!=='granted') Notification.requestPermission();
-  function notify(msg){ 
-    new Notification(msg); 
-    const log = document.getElementById('notificationLog');
-    log.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
-  }
-  setTimeout(()=>notify('Time for your medicine!'), 5000);
-  setTimeout(()=>notify('Time for your meal!'), 10000);
-  alert('Notifications scheduled! Demo alerts in few seconds.');
-}
-</script>
-</body>
-</html>
+    const reportAnalysis = document.getElementById('reportAnalysis');
+    reportAnalysis.innerHTML=`<p>Analyzing ${file.name}...</p>`;
+    
+    // Only images supported for OCR demo
+    if(file.type.startsWith('image/')){
+      const reader = new FileReader();
+      reader.onload = function(){
+        Tesseract.recognize(reader.result, 'eng')
+        .then(({data:{text}})=>{
+          let detected = '';
+          if(text.toLowerCase().includes('hypertension')) detected+='Detected Condition: Hypertension<br>';
+          if(text.toLowerCase().includes('cholesterol')) detected+='Detected Condition: High Chol
