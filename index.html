@@ -1,148 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bewell Dashboard</title>
-  <style>
-    :root {
-      --accent:#4CAF50;
-      --muted:#6b7280;
-      --bg:#f6fbf7;
-      --card:#ffffff;
-      --danger:#ef4444;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; display: flex; height: 100vh; font-family: inherit; background: var(--bg); color: #0f172a; }
-
-    /* Sidebar */
-    .sidebar { width: 220px; background: var(--accent); color: white; display: flex; flex-direction: column; }
-    .sidebar h2 { text-align: center; padding: 20px 0; margin: 0; }
-    .sidebar a { color: white; padding: 12px 20px; text-decoration: none; display: block; cursor: pointer; }
-    .sidebar a:hover { background: rgba(255,255,255,0.2); }
-
-    /* Main */
-    .main { flex: 1; padding: 20px; overflow-y: auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; }
-    .header button { background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-
-    /* Cards */
-    .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 6px 18px rgba(16,24,40,0.06); }
-
-    /* Forms */
-    input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #e6eef2; font-size: 14px; }
-    button.btn-primary { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
-    button.btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 10px 16px; border-radius: 6px; }
-    .hidden { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bewell Health Dashboard</title>
+<style>
+  :root {
+    --accent:#4CAF50;
+    --muted:#6b7280;
+    --bg:#f6fbf7;
+    --card:#ffffff;
+    --danger:#ef4444;
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; display:flex; height:100vh; background: var(--bg); color:#0f172a;}
+  .sidebar{width:240px; background: var(--accent); color:white; display:flex; flex-direction: column;}
+  .sidebar h2{text-align:center; padding:20px 0; margin:0;}
+  .sidebar a{color:white; padding:12px 20px; text-decoration:none; display:block; cursor:pointer;}
+  .sidebar a:hover{background:rgba(255,255,255,0.2);}
+  .main{flex:1; padding:20px; overflow-y:auto;}
+  .header{display:flex; justify-content:space-between; align-items:center;}
+  .header button{background:var(--danger); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;}
+  .card{background:var(--card); padding:20px; border-radius:12px; margin-bottom:20px; box-shadow:0 6px 18px rgba(16,24,40,0.06);}
+  input, select, textarea{width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #e6eef2; font-size:14px;}
+  button.btn-primary{background: var(--accent); color:white; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;}
+  .hidden{display:none;}
+</style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>Bewell</h2>
-    <a onclick="showSection('profile')">Profile</a>
-    <a onclick="showSection('recommendations')">Food Recommendations</a>
-    <a onclick="showSection('history')">History</a>
-    <a onclick="showSection('settings')">Settings</a>
+
+<div class="sidebar">
+  <h2>Bewell</h2>
+  <a onclick="showSection('profile')">Profile</a>
+  <a onclick="showSection('recommendations')">Recommendations</a>
+  <a onclick="showSection('reports')">Health Reports</a>
+  <a onclick="showSection('notifications')">Notifications</a>
+  <a onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1>Dashboard</h1>
   </div>
 
-  <!-- Main Content -->
-  <div class="main">
-    <div class="header">
-      <h1>Dashboard</h1>
-      <button onclick="logout()">Logout</button>
-    </div>
-
-    <!-- Sections -->
-    <div id="profile" class="card section">
-      <h2>User Profile</h2>
-      <form id="bewellForm">
-        <input type="text" id="name" placeholder="Name" required>
-        <input type="number" id="age" placeholder="Age" required>
-        <input type="text" id="location" placeholder="Location" required>
-        <select id="goal" required>
-          <option value="">Health Goal</option>
-          <option value="weight_loss">Weight Loss</option>
-          <option value="muscle_gain">Muscle Gain</option>
-          <option value="balanced_diet">Balanced Diet</option>
-        </select>
-        <textarea id="conditions" placeholder="Medical Conditions (optional)"></textarea>
-        <button type="submit" class="btn-primary">Save & Get Recommendations</button>
-      </form>
-    </div>
-
-    <div id="recommendations" class="card section hidden">
-      <h2>Food Recommendations</h2>
-      <div id="recommendationsDiv">Your recommended foods will appear here.</div>
-    </div>
-
-    <div id="history" class="card section hidden">
-      <h2>History</h2>
-      <div id="historyDiv">No previous history found.</div>
-    </div>
-
-    <div id="settings" class="card section hidden">
-      <h2>Settings</h2>
-      <button onclick="clearHistory()" class="btn-outline">Clear History</button>
-    </div>
+  <!-- Profile Section -->
+  <div id="profile" class="card section">
+    <h2>User Profile</h2>
+    <form id="profileForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="number" id="age" placeholder="Age" required>
+      <input type="text" id="gender" placeholder="Gender" required>
+      <input type="number" id="height" placeholder="Height (cm)" required>
+      <input type="number" id="weight" placeholder="Weight (kg)" required>
+      <textarea id="conditions" placeholder="Medical Conditions (e.g., Diabetes, BP)" required></textarea>
+      <input type="text" id="location" placeholder="Current Location" readonly>
+      <button type="submit" class="btn-primary">Save & Get Recommendations</button>
+    </form>
   </div>
 
-  <script>
-    // Section switch
-    function showSection(id){
-      document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-    }
+  <!-- Recommendations Section -->
+  <div id="recommendations" class="card section hidden">
+    <h2>Food & Medicine Recommendations</h2>
+    <div id="recommendationContent">Your recommendations will appear here.</div>
+  </div>
 
-    // Logout
-    function logout(){
-      location.reload();
-    }
+  <!-- Reports Section -->
+  <div id="reports" class="card section hidden">
+    <h2>Upload Health Reports</h2>
+    <input type="file" id="reportUpload" accept=".pdf,.jpg,.png,.jpeg">
+    <div id="reportAnalysis">Upload a report to see chatbot explanation here.</div>
+  </div>
 
-    // Form handling & recommendations
-    const bewellForm = document.getElementById('bewellForm');
-    const recommendationsDiv = document.getElementById('recommendationsDiv');
-    const historyDiv = document.getElementById('historyDiv');
+  <!-- Notifications Section -->
+  <div id="notifications" class="card section hidden">
+    <h2>Notifications</h2>
+    <button onclick="scheduleNotifications()" class="btn-primary">Enable Medicine & Meal Reminders</button>
+    <div id="notificationLog"></div>
+  </div>
+</div>
 
-    bewellForm.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const age = document.getElementById('age').value;
-      const location = document.getElementById('location').value;
-      const goal = document.getElementById('goal').value;
-      const conditions = document.getElementById('conditions').value;
+<script>
+// Section switch
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
 
-      let rec = '';
-      if(goal==='weight_loss') rec = '🥗 Oats, Green Salads, Steamed Vegetables, Grilled Chicken.';
-      else if(goal==='muscle_gain') rec = '🍗 Eggs, Chicken Breast, Paneer, Protein Shakes, Nuts.';
-      else if(goal==='balanced_diet') rec = '🍎 Fruits, Whole Grains, Lean Proteins, Vegetables, Dairy.';
-      else rec = '⚠ Please select a valid goal.';
+// Logout
+function logout(){ location.reload(); }
 
-      recommendationsDiv.textContent = rec;
-      showSection('recommendations');
-
-      // Save history
-      let history = JSON.parse(localStorage.getItem('bewell_history') || '[]');
-      history.push({name, age, location, goal, conditions, rec, date: new Date().toLocaleString()});
-      localStorage.setItem('bewell_history', JSON.stringify(history));
-      renderHistory();
+// Auto-detect location
+window.onload = () => {
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      document.getElementById('location').value = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
     });
+  }
+}
 
-    function renderHistory(){
-      const history = JSON.parse(localStorage.getItem('bewell_history') || '[]');
-      if(history.length===0) historyDiv.textContent = 'No previous history found.';
-      else historyDiv.innerHTML = history.map(h => `<p><b>${h.date}</b>: ${h.name} (${h.goal}) → ${h.rec}</p>`).join('');
-    }
+// Profile form submit
+const profileForm = document.getElementById('profileForm');
+const recommendationContent = document.getElementById('recommendationContent');
 
-    function clearHistory(){
-      localStorage.removeItem('bewell_history');
-      renderHistory();
-      alert('History cleared');
-    }
+profileForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const conditions = document.getElementById('conditions').value.toLowerCase();
+  let foodRec = '';
+  let medRec = '';
 
-    // Load history on start
-    renderHistory();
-  </script>
+  // Food recommendation based on conditions
+  if(conditions.includes('diabetes')){
+    foodRec += '🥗 Low sugar foods, whole grains, vegetables.\n';
+    medRec += '💊 Take Diabetes medication as prescribed by doctor.\n';
+  }
+  if(conditions.includes('bp') || conditions.includes('blood pressure')){
+    foodRec += '🥦 Low salt, potassium-rich foods.\n';
+    medRec += '💊 BP medications as prescribed.\n';
+  }
+  if(conditions.includes('cholesterol')){
+    foodRec += '🥑 Include healthy fats, avoid fried foods.\n';
+    medRec += '💊 Statins or doctor-prescribed meds.\n';
+  }
+
+  // Default recommendation
+  if(foodRec==='') foodRec = '🍎 Balanced diet with fruits, vegetables, and proteins.';
+  if(medRec==='') medRec = '💊 Follow doctor prescriptions as needed.';
+
+  recommendationContent.textContent = `Hello ${name},\n\nFood Recommendations:\n${foodRec}\nMedicine Recommendations:\n${medRec}`;
+  showSection('recommendations');
+});
+
+// Health report upload
+document.getElementById('reportUpload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(file){
+    // Placeholder parsing: in real app, OCR/AI would process the file
+    document.getElementById('reportAnalysis').textContent = `Analyzing report: ${file.name}...\nDetected Conditions: Hypertension, High Cholesterol.\nRecommendation: Follow diet plan, take medicines as prescribed.`;
+  }
+});
+
+// Notifications
+function scheduleNotifications(){
+  if(Notification.permission!=='granted') Notification.requestPermission();
+  function notify(msg){ 
+    new Notification(msg); 
+    const log = document.getElementById('notificationLog');
+    log.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
+  }
+  // Example reminders
+  setTimeout(()=>notify('Time for your medicine!'), 5000);
+  setTimeout(()=>notify('Time for your meal!'), 10000);
+  alert('Notifications scheduled! (Demo: will appear after a few seconds)');
+}
+
+</script>
 </body>
 </html>
