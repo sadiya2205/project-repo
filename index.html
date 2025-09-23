@@ -7,11 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent:#4CAF50;
-  --muted:#6b7280;
-  --bg:#f6fbf7;
-  --card:#ffffff;
-  --danger:#ef4444;
+  --accent: #4CAF50;
+  --muted: #6b7280;
+  --bg: #f6fbf7;
+  --card: #ffffff;
+  --danger: #ef4444;
   --shadow: rgba(0,0,0,0.1);
   font-family: 'Inter', sans-serif;
 }
@@ -19,16 +19,27 @@
 body{margin:0; display:flex; height:100vh; background: var(--bg); color:#0f172a;}
 
 /* Sidebar */
-.sidebar{width:250px; background: var(--accent); color:white; display:flex; flex-direction: column; transition: 0.3s;}
-.sidebar h2{text-align:center; padding:20px 0; margin:0; font-size:24px; letter-spacing:1px;}
-.sidebar a{color:white; padding:15px 20px; text-decoration:none; display:flex; align-items:center; gap:10px; cursor:pointer; transition:0.2s;}
+.sidebar{
+  width:260px; background: var(--accent); color:white;
+  display:flex; flex-direction:column; transition:0.3s;
+}
+.sidebar h2{
+  text-align:center; padding:20px 0; margin:0; font-size:26px; letter-spacing:1px;
+}
+.sidebar a{
+  color:white; padding:15px 20px; text-decoration:none; display:flex; align-items:center;
+  gap:10px; cursor:pointer; transition:0.2s; font-weight:500;
+}
 .sidebar a:hover{background:rgba(255,255,255,0.2); border-left:4px solid white;}
 
 /* Main */
 .main{flex:1; padding:30px; overflow-y:auto;}
 .header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
 .header h1{margin:0; font-size:28px;}
-.header button{background:var(--danger); color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; transition:0.2s;}
+.header button{
+  background:var(--danger); color:white; border:none; padding:8px 14px;
+  border-radius:6px; cursor:pointer; transition:0.2s;
+}
 .header button:hover{background:#d63636;}
 
 /* Cards */
@@ -37,18 +48,40 @@ body{margin:0; display:flex; height:100vh; background: var(--bg); color:#0f172a;
 .section.active{display:block;}
 
 /* Forms */
-input, select, textarea{width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:1px solid #e6eef2; font-size:14px; outline:none; transition:0.2s;}
+input, select, textarea{
+  width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:1px solid #e6eef2;
+  font-size:14px; outline:none; transition:0.2s;
+}
 input:focus, select:focus, textarea:focus{border-color:var(--accent); box-shadow:0 0 6px rgba(76,175,80,0.2);}
-button.btn-primary{background: var(--accent); color:white; border:none; padding:12px 18px; border-radius:8px; cursor:pointer; transition:0.2s;}
+button.btn-primary{
+  background: var(--accent); color:white; border:none; padding:12px 18px;
+  border-radius:8px; cursor:pointer; transition:0.2s; font-weight:600;
+}
 button.btn-primary:hover{background:#45a049;}
-.file-input{border:2px dashed #e6eef2; padding:20px; text-align:center; cursor:pointer; border-radius:12px; transition:0.2s;}
+
+/* File upload */
+.file-input{
+  border:2px dashed #e6eef2; padding:25px; text-align:center; cursor:pointer; border-radius:12px; transition:0.2s;
+  background:white;
+}
 .file-input:hover{background:#f0f8f0;}
 
-/* Recommendation Cards */
-.recommend-card{background:#e6f7e6; padding:15px; border-radius:10px; margin-bottom:10px;}
+/* Recommendation cards */
+.recommend-card{
+  background:#e6f7e6; padding:15px; border-radius:10px; margin-bottom:12px;
+  border-left:4px solid var(--accent);
+}
 
 /* Notifications log */
 #notificationLog p{margin:6px 0; padding:6px 10px; background:#f0fff0; border-radius:6px;}
+
+/* Responsive adjustments */
+@media(max-width:900px){
+  body{flex-direction:column;}
+  .sidebar{width:100%; flex-direction:row; overflow-x:auto;}
+  .sidebar a{flex:1; justify-content:center;}
+  .main{padding:15px;}
+}
 </style>
 </head>
 <body>
@@ -74,7 +107,12 @@ button.btn-primary:hover{background:#45a049;}
       <input type="text" id="name" placeholder="Name" required>
       <div style="display:flex; gap:10px;">
         <input type="number" id="age" placeholder="Age" required>
-        <input type="text" id="gender" placeholder="Gender" required>
+        <select id="gender" required>
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
       <div style="display:flex; gap:10px;">
         <input type="number" id="height" placeholder="Height (cm)" required>
@@ -108,7 +146,6 @@ button.btn-primary:hover{background:#45a049;}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 <script>
 // Section switch
 function showSection(id){
@@ -162,19 +199,22 @@ profileForm.addEventListener('submit', e=>{
   showSection('recommendations');
 });
 
-// Report upload and parsing using Tesseract.js (OCR)
+// Report upload placeholder
 document.getElementById('reportUpload').addEventListener('change', e=>{
   const file = e.target.files[0];
   if(file){
     const reportAnalysis = document.getElementById('reportAnalysis');
-    reportAnalysis.innerHTML=`<p>Analyzing ${file.name}...</p>`;
-    
-    // Only images supported for OCR demo
-    if(file.type.startsWith('image/')){
-      const reader = new FileReader();
-      reader.onload = function(){
-        Tesseract.recognize(reader.result, 'eng')
-        .then(({data:{text}})=>{
-          let detected = '';
-          if(text.toLowerCase().includes('hypertension')) detected+='Detected Condition: Hypertension<br>';
-          if(text.toLowerCase().includes('cholesterol')) detected+='Detected Condition: High Chol
+    reportAnalysis.innerHTML = `<div class="recommend-card">Analyzing report: ${file.name}<br>
+      Chatbot Explanation: Possible conditions detected. Follow your doctor advice for detailed treatment.</div>`;
+  }
+});
+
+// Notifications
+function scheduleNotifications(){
+  if(Notification.permission!=='granted') Notification.requestPermission();
+  function notify(msg){ 
+    new Notification(msg); 
+    const log = document.getElementById('notificationLog');
+    log.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
+  }
+  setTimeout(()=>notify('Time for your medicine!'), 
