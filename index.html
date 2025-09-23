@@ -1,207 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>College Cafeteria Menu & Recipes</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bewell Dashboard</title>
   <style>
-    body {
-      font-family: Arial;
-      background-color: #fff3e0;
-      margin: 0;
-      padding: 0;
+    :root {
+      --accent:#4CAF50;
+      --muted:#6b7280;
+      --bg:#f6fbf7;
+      --card:#ffffff;
+      --danger:#ef4444;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
+    * { box-sizing: border-box; }
+    body { margin: 0; display: flex; height: 100vh; font-family: inherit; background: var(--bg); color: #0f172a; }
 
-    header {
-      background-color: #FF7043;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
+    /* Sidebar */
+    .sidebar { width: 220px; background: var(--accent); color: white; display: flex; flex-direction: column; }
+    .sidebar h2 { text-align: center; padding: 20px 0; margin: 0; }
+    .sidebar a { color: white; padding: 12px 20px; text-decoration: none; display: block; cursor: pointer; }
+    .sidebar a:hover { background: rgba(255,255,255,0.2); }
 
-    .container {
-      max-width: 700px;
-      margin: 20px auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
+    /* Main */
+    .main { flex: 1; padding: 20px; overflow-y: auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .header button { background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
 
-    select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+    /* Cards */
+    .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 6px 18px rgba(16,24,40,0.06); }
 
-    button {
-      background-color: #FF7043;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #E64A19;
-    }
-
-    .items, .recipe {
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .recipe {
-      padding: 15px;
-      border: 1px solid #FF7043;
-      border-radius: 5px;
-      background-color: #fff8f0;
-      display: none;
-    }
-
-    h3 {
-      color: #FF7043;
-    }
-
-    ul, ol {
-      padding-left: 20px;
-    }
-
-    li {
-      cursor: pointer;
-      margin: 5px 0;
-    }
-
-    li:hover {
-      color: #FF7043;
-    }
+    /* Forms */
+    input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #e6eef2; font-size: 14px; }
+    button.btn-primary { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
+    button.btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 10px 16px; border-radius: 6px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Bewell</h2>
+    <a onclick="showSection('profile')">Profile</a>
+    <a onclick="showSection('recommendations')">Food Recommendations</a>
+    <a onclick="showSection('history')">History</a>
+    <a onclick="showSection('settings')">Settings</a>
+  </div>
 
-<header>
-  <h1>College Cafeteria Menu & Recipes</h1>
-</header>
+  <!-- Main Content -->
+  <div class="main">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <button onclick="logout()">Logout</button>
+    </div>
 
-<div class="container">
-  <h2>Select Meal Type</h2>
-  <select id="mealType" onchange="showItems()">
-    <option value="">Select</option>
-    <option value="Breakfast">Breakfast</option>
-    <option value="Lunch">Lunch</option>
-    <option value="Dinner">Dinner</option>
-    <option value="Snack">Snack</option>
-  </select>
+    <!-- Sections -->
+    <div id="profile" class="card section">
+      <h2>User Profile</h2>
+      <form id="bewellForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="text" id="location" placeholder="Location" required>
+        <select id="goal" required>
+          <option value="">Health Goal</option>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="muscle_gain">Muscle Gain</option>
+          <option value="balanced_diet">Balanced Diet</option>
+        </select>
+        <textarea id="conditions" placeholder="Medical Conditions (optional)"></textarea>
+        <button type="submit" class="btn-primary">Save & Get Recommendations</button>
+      </form>
+    </div>
 
-  <div class="items" id="itemList"></div>
-  <div class="recipe" id="recipeBox"></div>
-</div>
+    <div id="recommendations" class="card section hidden">
+      <h2>Food Recommendations</h2>
+      <div id="recommendationsDiv">Your recommended foods will appear here.</div>
+    </div>
 
-<script>
-const menu = {
-  "Breakfast": ["Pancakes", "Veggie Omelette", "Fruit Smoothie", "Avocado Toast"],
-  "Lunch": ["Grilled Chicken Salad", "Vegetable Stir-Fry", "Pasta Alfredo", "Quinoa Bowl"],
-  "Dinner": ["Baked Salmon", "Chicken Curry", "Veggie Lasagna", "Stuffed Peppers"],
-  "Snack": ["Chocolate Chip Cookies", "Fruit Yogurt Parfait", "Veggie Sandwich", "Hummus with Crackers"]
-};
+    <div id="history" class="card section hidden">
+      <h2>History</h2>
+      <div id="historyDiv">No previous history found.</div>
+    </div>
 
-const recipes = {
-  "Pancakes": {
-    ingredients: ["1 cup flour", "1 tbsp sugar", "1 tsp baking powder", "1 cup milk", "1 egg", "2 tbsp melted butter", "Maple syrup"],
-    instructions: ["Mix flour, sugar, and baking powder.", "Add milk, egg, and butter, stir until smooth.", "Heat a pan, pour batter.", "Cook until bubbles appear, flip, cook other side.", "Serve with maple syrup."]
-  },
-  "Veggie Omelette": {
-    ingredients: ["2 eggs", "1/4 cup onions", "1/4 cup tomatoes", "1/4 cup bell peppers", "Salt & pepper", "1 tsp oil"],
-    instructions: ["Beat eggs with salt & pepper.", "Sauté veggies in oil 2 mins.", "Pour eggs over veggies, cook until set, fold and serve."]
-  },
-  "Fruit Smoothie": {
-    ingredients: ["1 banana", "1/2 cup strawberries", "1/2 cup yogurt", "1/4 cup milk", "1 tsp honey"],
-    instructions: ["Blend all ingredients until smooth.", "Pour in a glass and serve chilled."]
-  },
-  "Avocado Toast": {
-    ingredients: ["2 slices bread", "1 ripe avocado", "Salt & pepper", "Lemon juice"],
-    instructions: ["Toast bread.", "Mash avocado with salt, pepper, lemon juice.", "Spread on toast and serve."]
-  },
-  "Grilled Chicken Salad": {
-    ingredients: ["1 chicken breast", "2 cups lettuce", "1/2 cup cherry tomatoes", "1/4 cup cucumber", "2 tbsp olive oil", "1 tbsp lemon juice", "Salt & pepper"],
-    instructions: ["Grill chicken with salt & pepper.", "Mix veggies in a bowl.", "Slice chicken, add to salad.", "Drizzle oil & lemon, toss and serve."]
-  },
-  "Vegetable Stir-Fry": {
-    ingredients: ["1 cup broccoli", "1 cup bell peppers", "1/2 cup carrots", "2 tbsp soy sauce", "1 tsp oil", "Salt"],
-    instructions: ["Heat oil, add vegetables, stir-fry 5-6 mins.", "Add soy sauce & salt, cook 2 mins.", "Serve hot."]
-  },
-  "Pasta Alfredo": {
-    ingredients: ["200g pasta", "1/2 cup cream", "2 tbsp butter", "1/4 cup grated cheese", "Salt & pepper"],
-    instructions: ["Cook pasta.", "Melt butter, add cream & cheese.", "Mix pasta, season, serve warm."]
-  },
-  "Quinoa Bowl": {
-    ingredients: ["1 cup cooked quinoa", "1/2 cup roasted vegetables", "1/4 cup chickpeas", "2 tbsp olive oil", "Salt & pepper"],
-    instructions: ["Mix quinoa, vegetables & chickpeas.", "Add olive oil, salt & pepper, serve fresh."]
-  },
-  "Baked Salmon": {
-    ingredients: ["1 salmon fillet", "Salt & pepper", "1 tbsp olive oil", "1 lemon slice", "Herbs"],
-    instructions: ["Preheat oven to 200°C.", "Season salmon, add lemon & herbs.", "Bake 15-20 mins, serve hot."]
-  },
-  "Chicken Curry": {
-    ingredients: ["200g chicken", "1 onion chopped", "2 tomatoes chopped", "2 tsp curry powder", "1 cup water", "Salt"],
-    instructions: ["Sauté onions until golden.", "Add chicken, cook 5 mins.", "Add tomatoes, curry powder, water, salt, simmer 20 mins.", "Serve with rice."]
-  },
-  "Veggie Lasagna": {
-    ingredients: ["Lasagna sheets", "1 cup tomato sauce", "1 cup mixed vegetables", "1/2 cup cheese"],
-    instructions: ["Preheat oven 180°C.", "Layer sheets, sauce, vegetables, cheese.", "Bake 25-30 mins, serve warm."]
-  },
-  "Stuffed Peppers": {
-    ingredients: ["4 bell peppers", "1 cup cooked rice", "1/2 cup vegetables", "1/4 cup cheese", "Salt & pepper"],
-    instructions: ["Cut tops, remove seeds.", "Mix rice, vegetables, cheese, salt & pepper.", "Stuff peppers, bake 20 mins 180°C.", "Serve hot."]
-  },
-  "Chocolate Chip Cookies": {
-    ingredients: ["1 cup flour", "1/2 tsp baking soda", "1/2 cup butter", "1/2 cup sugar", "1 egg", "1 tsp vanilla", "1/2 cup chocolate chips"],
-    instructions: ["Preheat oven 180°C.", "Cream butter & sugar.", "Add egg & vanilla.", "Mix in flour, baking soda & chips.", "Bake 10-12 mins."]
-  },
-  "Fruit Yogurt Parfait": {
-    ingredients: ["1/2 cup yogurt", "1/4 cup granola", "1/2 cup mixed fruits"],
-    instructions: ["Layer yogurt, granola & fruits in a glass.", "Repeat layers, serve chilled."]
-  },
-  "Veggie Sandwich": {
-    ingredients: ["2 slices bread", "Lettuce, tomato, cucumber", "Cheese slice", "Mayonnaise"],
-    instructions: ["Spread mayo on bread.", "Add vegetables & cheese.", "Close sandwich, serve."]
-  },
-  "Hummus with Crackers": {
-    ingredients: ["1/2 cup chickpeas", "2 tbsp olive oil", "1 tbsp lemon juice", "Salt", "Crackers"],
-    instructions: ["Blend chickpeas, olive oil, lemon juice & salt.", "Serve with crackers."]
-  }
-};
+    <div id="settings" class="card section hidden">
+      <h2>Settings</h2>
+      <button onclick="clearHistory()" class="btn-outline">Clear History</button>
+    </div>
+  </div>
 
-function showItems() {
-  const mealType = document.getElementById('mealType').value;
-  const itemList = document.getElementById('itemList');
-  const recipeBox = document.getElementById('recipeBox');
-  recipeBox.style.display = 'none';
-  itemList.innerHTML = '';
+  <script>
+    // Section switch
+    function showSection(id){
+      document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
 
-  if(!mealType) return;
+    // Logout
+    function logout(){
+      location.reload();
+    }
 
-  menu[mealType].forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    li.onclick = () => showRecipe(item);
-    itemList.appendChild(li);
-  });
-}
+    // Form handling & recommendations
+    const bewellForm = document.getElementById('bewellForm');
+    const recommendationsDiv = document.getElementById('recommendationsDiv');
+    const historyDiv = document.getElementById('historyDiv');
 
-function showRecipe(item) {
-  const recipe = recipes[item];
-  const recipeBox = document.getElementById('recipeBox');
-  let html = `<h3>${item}</h3>`;
-  html += `<strong>Ingredients:</strong><ul>`;
-  recipe.ingredients.forEach(ing => html += `<li>${ing}</li>`);
-  html += `</ul><strong>Instructions:</strong><ol>`;
-  recipe.instructions.forEach(ins => html += `<li>${ins}</li>`);
-  html += `</ol>`;
-  recipeBox.style.display = 'block';
-  recipeBox.innerHTML = html;
-}
-</script>
+    bewellForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      const location = document.getElementById('location').value;
+      const goal = document.getElementById('goal').value;
+      const conditions = document.getElementById('conditions').value;
 
+      let rec = '';
+      if(goal==='weight_loss') rec = '🥗 Oats, Green Salads, Steamed Vegetables, Grilled Chicken.';
+      else if(goal==='muscle_gain') rec = '🍗 Eggs, Chicken Breast, Paneer, Protein Shakes, Nuts.';
+      else if(goal==='balanced_diet') rec = '🍎 Fruits, Whole Grains, Lean Proteins, Vegetables, Dairy.';
+      else rec = '⚠ Please select a valid goal.';
+
+      recommendationsDiv.textContent = rec;
+      showSection('recommendations');
+
+      // Save history
+      let history = JSON.parse(localStorage.getItem('bewell_history') || '[]');
+      history.push({name, age, location, goal, conditions, rec, date: new Date().toLocaleString()});
+      localStorage.setItem('bewell_history', JSON.stringify(history));
+      renderHistory();
+    });
+
+    function renderHistory(){
+      const history = JSON.parse(localStorage.getItem('bewell_history') || '[]');
+      if(history.length===0) historyDiv.textContent = 'No previous history found.';
+      else historyDiv.innerHTML = history.map(h => `<p><b>${h.date}</b>: ${h.name} (${h.goal}) → ${h.rec}</p>`).join('');
+    }
+
+    function clearHistory(){
+      localStorage.removeItem('bewell_history');
+      renderHistory();
+      alert('History cleared');
+    }
+
+    // Load history on start
+    renderHistory();
+  </script>
 </body>
 </html>
