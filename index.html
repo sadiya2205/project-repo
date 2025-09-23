@@ -4,39 +4,62 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bewell Health Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --accent:#4CAF50;
-    --muted:#6b7280;
-    --bg:#f6fbf7;
-    --card:#ffffff;
-    --danger:#ef4444;
-    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0; display:flex; height:100vh; background: var(--bg); color:#0f172a;}
-  .sidebar{width:240px; background: var(--accent); color:white; display:flex; flex-direction: column;}
-  .sidebar h2{text-align:center; padding:20px 0; margin:0;}
-  .sidebar a{color:white; padding:12px 20px; text-decoration:none; display:block; cursor:pointer;}
-  .sidebar a:hover{background:rgba(255,255,255,0.2);}
-  .main{flex:1; padding:20px; overflow-y:auto;}
-  .header{display:flex; justify-content:space-between; align-items:center;}
-  .header button{background:var(--danger); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;}
-  .card{background:var(--card); padding:20px; border-radius:12px; margin-bottom:20px; box-shadow:0 6px 18px rgba(16,24,40,0.06);}
-  input, select, textarea{width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #e6eef2; font-size:14px;}
-  button.btn-primary{background: var(--accent); color:white; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;}
-  .hidden{display:none;}
+:root {
+  --accent:#4CAF50;
+  --muted:#6b7280;
+  --bg:#f6fbf7;
+  --card:#ffffff;
+  --danger:#ef4444;
+  --shadow: rgba(0,0,0,0.1);
+  font-family: 'Inter', sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0; display:flex; height:100vh; background: var(--bg); color:#0f172a;}
+
+/* Sidebar */
+.sidebar{width:250px; background: var(--accent); color:white; display:flex; flex-direction: column; transition: 0.3s;}
+.sidebar h2{text-align:center; padding:20px 0; margin:0; font-size:24px; letter-spacing:1px;}
+.sidebar a{color:white; padding:15px 20px; text-decoration:none; display:flex; align-items:center; gap:10px; cursor:pointer; transition:0.2s;}
+.sidebar a:hover{background:rgba(255,255,255,0.2); border-left:4px solid white;}
+
+/* Main */
+.main{flex:1; padding:30px; overflow-y:auto;}
+.header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+.header h1{margin:0; font-size:28px;}
+.header button{background:var(--danger); color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; transition:0.2s;}
+.header button:hover{background:#d63636;}
+
+/* Cards */
+.card{background:var(--card); padding:25px; border-radius:15px; margin-bottom:20px; box-shadow:0 8px 20px var(--shadow);}
+.section{display:none;}
+.section.active{display:block;}
+
+/* Forms */
+input, select, textarea{width:100%; padding:12px; margin-bottom:12px; border-radius:8px; border:1px solid #e6eef2; font-size:14px; outline:none; transition:0.2s;}
+input:focus, select:focus, textarea:focus{border-color:var(--accent); box-shadow:0 0 6px rgba(76,175,80,0.2);}
+button.btn-primary{background: var(--accent); color:white; border:none; padding:12px 18px; border-radius:8px; cursor:pointer; transition:0.2s;}
+button.btn-primary:hover{background:#45a049;}
+.file-input{border:2px dashed #e6eef2; padding:20px; text-align:center; cursor:pointer; border-radius:12px; transition:0.2s;}
+.file-input:hover{background:#f0f8f0;}
+
+/* Recommendation Cards */
+.recommend-card{background:#e6f7e6; padding:15px; border-radius:10px; margin-bottom:10px;}
+
+/* Notifications log */
+#notificationLog p{margin:6px 0; padding:6px 10px; background:#f0fff0; border-radius:6px;}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <h2>Bewell</h2>
-  <a onclick="showSection('profile')">Profile</a>
-  <a onclick="showSection('recommendations')">Recommendations</a>
-  <a onclick="showSection('reports')">Health Reports</a>
-  <a onclick="showSection('notifications')">Notifications</a>
-  <a onclick="logout()">Logout</a>
+  <h2>💚 Bewell</h2>
+  <a onclick="showSection('profile')">👤 Profile</a>
+  <a onclick="showSection('recommendations')">🍎 Recommendations</a>
+  <a onclick="showSection('reports')">📄 Health Reports</a>
+  <a onclick="showSection('notifications')">⏰ Notifications</a>
+  <a onclick="logout()">🚪 Logout</a>
 </div>
 
 <div class="main">
@@ -45,14 +68,18 @@
   </div>
 
   <!-- Profile Section -->
-  <div id="profile" class="card section">
-    <h2>User Profile</h2>
+  <div id="profile" class="card section active">
+    <h2>Personal & Health Info</h2>
     <form id="profileForm">
       <input type="text" id="name" placeholder="Name" required>
-      <input type="number" id="age" placeholder="Age" required>
-      <input type="text" id="gender" placeholder="Gender" required>
-      <input type="number" id="height" placeholder="Height (cm)" required>
-      <input type="number" id="weight" placeholder="Weight (kg)" required>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="text" id="gender" placeholder="Gender" required>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="height" placeholder="Height (cm)" required>
+        <input type="number" id="weight" placeholder="Weight (kg)" required>
+      </div>
       <textarea id="conditions" placeholder="Medical Conditions (e.g., Diabetes, BP)" required></textarea>
       <input type="text" id="location" placeholder="Current Location" readonly>
       <button type="submit" class="btn-primary">Save & Get Recommendations</button>
@@ -60,31 +87,32 @@
   </div>
 
   <!-- Recommendations Section -->
-  <div id="recommendations" class="card section hidden">
+  <div id="recommendations" class="card section">
     <h2>Food & Medicine Recommendations</h2>
-    <div id="recommendationContent">Your recommendations will appear here.</div>
+    <div id="recommendationContent"></div>
   </div>
 
   <!-- Reports Section -->
-  <div id="reports" class="card section hidden">
+  <div id="reports" class="card section">
     <h2>Upload Health Reports</h2>
-    <input type="file" id="reportUpload" accept=".pdf,.jpg,.png,.jpeg">
-    <div id="reportAnalysis">Upload a report to see chatbot explanation here.</div>
+    <div class="file-input" onclick="document.getElementById('reportUpload').click()">Click or Drag to Upload Report</div>
+    <input type="file" id="reportUpload" accept=".pdf,.jpg,.png,.jpeg" style="display:none;">
+    <div id="reportAnalysis" style="margin-top:15px;"></div>
   </div>
 
   <!-- Notifications Section -->
-  <div id="notifications" class="card section hidden">
+  <div id="notifications" class="card section">
     <h2>Notifications</h2>
     <button onclick="scheduleNotifications()" class="btn-primary">Enable Medicine & Meal Reminders</button>
-    <div id="notificationLog"></div>
+    <div id="notificationLog" style="margin-top:15px;"></div>
   </div>
 </div>
 
 <script>
 // Section switch
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
 // Logout
@@ -94,52 +122,52 @@ function logout(){ location.reload(); }
 window.onload = () => {
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      document.getElementById('location').value = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+      const lat = pos.coords.latitude.toFixed(2);
+      const lon = pos.coords.longitude.toFixed(2);
+      document.getElementById('location').value = `Lat: ${lat}, Lon: ${lon}`;
     });
   }
 }
 
-// Profile form submit
+// Profile form
 const profileForm = document.getElementById('profileForm');
 const recommendationContent = document.getElementById('recommendationContent');
 
-profileForm.addEventListener('submit', e => {
+profileForm.addEventListener('submit', e=>{
   e.preventDefault();
   const name = document.getElementById('name').value;
   const conditions = document.getElementById('conditions').value.toLowerCase();
   let foodRec = '';
   let medRec = '';
 
-  // Food recommendation based on conditions
   if(conditions.includes('diabetes')){
-    foodRec += '🥗 Low sugar foods, whole grains, vegetables.\n';
-    medRec += '💊 Take Diabetes medication as prescribed by doctor.\n';
+    foodRec += '🥗 Low sugar foods, whole grains, vegetables.<br>';
+    medRec += '💊 Take Diabetes medication as prescribed.<br>';
   }
-  if(conditions.includes('bp') || conditions.includes('blood pressure')){
-    foodRec += '🥦 Low salt, potassium-rich foods.\n';
-    medRec += '💊 BP medications as prescribed.\n';
+  if(conditions.includes('bp')){
+    foodRec += '🥦 Low salt, potassium-rich foods.<br>';
+    medRec += '💊 BP medications as prescribed.<br>';
   }
   if(conditions.includes('cholesterol')){
-    foodRec += '🥑 Include healthy fats, avoid fried foods.\n';
-    medRec += '💊 Statins or doctor-prescribed meds.\n';
+    foodRec += '🥑 Include healthy fats, avoid fried foods.<br>';
+    medRec += '💊 Statins or doctor-prescribed meds.<br>';
   }
+  if(foodRec==='') foodRec='🍎 Balanced diet with fruits, vegetables, and proteins.<br>';
+  if(medRec==='') medRec='💊 Follow doctor prescriptions as needed.<br>';
 
-  // Default recommendation
-  if(foodRec==='') foodRec = '🍎 Balanced diet with fruits, vegetables, and proteins.';
-  if(medRec==='') medRec = '💊 Follow doctor prescriptions as needed.';
-
-  recommendationContent.textContent = `Hello ${name},\n\nFood Recommendations:\n${foodRec}\nMedicine Recommendations:\n${medRec}`;
+  recommendationContent.innerHTML = `<div class="recommend-card"><b>Hello ${name},</b></div>
+  <div class="recommend-card"><b>Food Recommendations:</b><br>${foodRec}</div>
+  <div class="recommend-card"><b>Medicine Recommendations:</b><br>${medRec}</div>`;
   showSection('recommendations');
 });
 
-// Health report upload
-document.getElementById('reportUpload').addEventListener('change', e => {
+// Report upload
+document.getElementById('reportUpload').addEventListener('change', e=>{
   const file = e.target.files[0];
   if(file){
-    // Placeholder parsing: in real app, OCR/AI would process the file
-    document.getElementById('reportAnalysis').textContent = `Analyzing report: ${file.name}...\nDetected Conditions: Hypertension, High Cholesterol.\nRecommendation: Follow diet plan, take medicines as prescribed.`;
+    document.getElementById('reportAnalysis').innerHTML=`<div class="recommend-card">Analyzing report: ${file.name}...<br>
+    Detected Conditions: Hypertension, High Cholesterol.<br>
+    Recommendation: Follow diet plan, take medicines as prescribed.</div>`;
   }
 });
 
@@ -151,12 +179,10 @@ function scheduleNotifications(){
     const log = document.getElementById('notificationLog');
     log.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
   }
-  // Example reminders
   setTimeout(()=>notify('Time for your medicine!'), 5000);
   setTimeout(()=>notify('Time for your meal!'), 10000);
-  alert('Notifications scheduled! (Demo: will appear after a few seconds)');
+  alert('Notifications scheduled! Demo alerts in few seconds.');
 }
-
 </script>
 </body>
 </html>
