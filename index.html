@@ -203,18 +203,4 @@ profileForm.addEventListener('submit', e=>{
 document.getElementById('reportUpload').addEventListener('change', e=>{
   const file = e.target.files[0];
   if(file){
-    const reportAnalysis = document.getElementById('reportAnalysis');
-    reportAnalysis.innerHTML = `<div class="recommend-card">Analyzing report: ${file.name}<br>
-      Chatbot Explanation: Possible conditions detected. Follow your doctor advice for detailed treatment.</div>`;
-  }
-});
-
-// Notifications
-function scheduleNotifications(){
-  if(Notification.permission!=='granted') Notification.requestPermission();
-  function notify(msg){ 
-    new Notification(msg); 
-    const log = document.getElementById('notificationLog');
-    log.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
-  }
-  setTimeout(()=>notify('Time for your medicine!'), 
+    const reportAnalysis = document.getElementById('report
